@@ -1,29 +1,37 @@
 import streamlit as st
 
-st.title("Simple Calculator")
+st.title(" Calculator")
 
-# Input numbers
-num1 = st.number_input("Enter first number", value=0.0)
-num2 = st.number_input("Enter second number", value=0.0)
+# Initialize session state
+if "expression" not in st.session_state:
+    st.session_state["expression"] = ""
 
-# Operation selection
-operation = st.selectbox(
-    "Select operation",
-    ("Addition", "Subtraction", "Multiplication", "Division")
-)
+# Display expression
+st.text_input("Expression", st.session_state["expression"], disabled=True)
 
-# Calculate button
-if st.button("Calculate"):
-    if operation == "Addition":
-        result = num1 + num2
-    elif operation == "Subtraction":
-        result = num1 - num2
-    elif operation == "Multiplication":
-        result = num1 * num2
-    elif operation == "Division":
-        if num2 != 0:
-            result = num1 / num2
+# Button layout
+cols = st.columns(4)
+
+buttons = [
+    "7", "8", "9", "plus +",
+    "4", "5", "6", "minus -",
+    "1", "2", "3", "multi *",
+    "0", "C", "=", "divide /"
+]
+
+for i, button in enumerate(buttons):
+    col = cols[i % 4]
+    if col.button(button):
+        if button == "C":
+            st.session_state["expression"] = ""
+        elif button == "=":
+            try:
+                st.session_state["expression"] = str(
+                    eval(st.session_state["expression"])
+                )
+            except:
+                st.session_state["expression"] = "Error"
         else:
-            result = "Cannot divide by zero"
+            st.session_state["expression"] += button
 
-    st.success(f"Result: {result}")
+        st.rerun() 
